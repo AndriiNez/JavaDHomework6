@@ -1,0 +1,27 @@
+plugins {
+    id 'java'
+}
+
+group = 'ua.homework'
+version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation platform('org.junit:junit-bom:5.9.1')
+
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+
+    implementation 'org.flywaydb:flyway-core:9.22.2'
+
+    implementation 'com.h2database:h2:2.2.224'
+
+    implementation 'com.zaxxer:HikariCP:5.0.1'
+
+}
+
+test {
+    useJUnitPlatform()
+}
