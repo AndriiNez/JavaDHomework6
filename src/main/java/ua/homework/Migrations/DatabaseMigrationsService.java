@@ -5,11 +5,11 @@ import org.flywaydb.core.Flyway;
 
 public class DatabaseMigrationsService {
 
-    public  void initDbService(String connectionUrl) {
+    public void initDbService(String connectionUrl) {
 
         Flyway flyway = Flyway.
                 configure().
-                dataSource(connectionUrl,null, null).
+                dataSource(connectionUrl, null, null).
                 load();
 
         flyway.migrate();

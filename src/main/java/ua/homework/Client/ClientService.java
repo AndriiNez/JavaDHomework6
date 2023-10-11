@@ -41,13 +41,10 @@ public class ClientService {
         } else if (name.length() < 2 || name.length() > 1000) {
             throw new IllegalArgumentException("Name cannot be less than 2 characters or more than 1000 characters");
         }
-
         try {
             createSt.setString(1, name);
             createSt.executeUpdate();
-
             long id;
-
             try (ResultSet rs = selectMaxIdSt.executeQuery()) {
                 rs.next();
                 id = rs.getLong("maxId");
@@ -72,7 +69,6 @@ public class ClientService {
             }
             name = rs.getString("name");
         }
-
         return name;
     }
 
@@ -101,7 +97,6 @@ public class ClientService {
         List<Client> result = new ArrayList<>();
         try {
             ResultSet resultSet = getAllClientSt.executeQuery();
-
             while (resultSet.next()) {
                 long id = resultSet.getInt("id");
                 String name = resultSet.getString("name");
@@ -111,7 +106,6 @@ public class ClientService {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-
         return result;
     }
 }

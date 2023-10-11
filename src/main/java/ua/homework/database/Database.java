@@ -29,6 +29,7 @@ public class Database {
     public Connection getConnection() throws SQLException {
         return dataSource.getConnection();
     }
+
     public String getConnectionUrl() {
         return CONNECTION_URL;
     }
