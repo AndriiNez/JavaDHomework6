@@ -11,28 +11,11 @@ import java.util.List;
 
 public class ClientService {
     private Connection connection;
-    private PreparedStatement createSt;
-    private PreparedStatement selectMaxIdSt;
-    private PreparedStatement getById;
-    private PreparedStatement deleteSt;
-    private PreparedStatement getAllClientSt;
-    private PreparedStatement setNameUpdateSt;
+
 
     public ClientService(Connection connection) throws SQLException {
         this.connection = connection;
 
-        createSt = connection.
-                prepareStatement("INSERT INTO client (name) VALUES (?)");
-        selectMaxIdSt = connection.
-                prepareStatement("SELECT max(id)AS maxId From client");
-        getById = connection.
-                prepareStatement("SELECT name FROM client WHERE id = ?");
-        deleteSt = connection.
-                prepareStatement("DELETE FROM client WHERE id = ?");
-        getAllClientSt = connection.
-                prepareStatement("SELECT * FROM client");
-        setNameUpdateSt = connection.
-                prepareStatement("UPDATE client SET name = ? WHERE id = ?");
     }
 
     public long create(String name) {
@@ -41,11 +24,14 @@ public class ClientService {
         } else if (name.length() < 2 || name.length() > 1000) {
             throw new IllegalArgumentException("Name cannot be less than 2 characters or more than 1000 characters");
         }
-        try {
+        try (PreparedStatement createSt = connection.
+                prepareStatement("INSERT INTO client (name) VALUES (?)")) {
             createSt.setString(1, name);
             createSt.executeUpdate();
             long id;
-            try (ResultSet rs = selectMaxIdSt.executeQuery()) {
+            try (PreparedStatement selectMaxIdSt = connection.
+                    prepareStatement("SELECT max(id)AS maxId From client");
+                 ResultSet rs = selectMaxIdSt.executeQuery()) {
                 rs.next();
                 id = rs.getLong("maxId");
             }
@@ -61,13 +47,21 @@ public class ClientService {
     }
 
     public String getById(long id) throws SQLException {
-        getById.setLong(1, id);
-        String name;
-        try (ResultSet rs = getById.executeQuery()) {
-            if (!rs.next()) {
-                return null;
+        String name = "";
+        try (PreparedStatement getById = connection.
+                prepareStatement("SELECT name FROM client WHERE id = ?")) {
+
+
+            getById.setLong(1, id);
+
+            try (ResultSet rs = getById.executeQuery()) {
+                if (!rs.next()) {
+                    return null;
+                }
+                name = rs.getString("name");
             }
-            name = rs.getString("name");
+        } catch (SQLException e) {
+
         }
         return name;
     }
@@ -79,7 +73,8 @@ public class ClientService {
             throw new IllegalArgumentException("Name cannot be less than 2 characters or more than 1000 characters");
         }
 
-        try {
+        try (PreparedStatement setNameUpdateSt = connection.
+                prepareStatement("UPDATE client SET name = ? WHERE id = ?")) {
             setNameUpdateSt.setString(1, name);
             setNameUpdateSt.setLong(2, id);
             setNameUpdateSt.executeUpdate();
@@ -89,13 +84,20 @@ public class ClientService {
     }
 
     public void deleteById(long id) throws SQLException {
-        deleteSt.setLong(1, id);
-        deleteSt.executeUpdate();
+        try (PreparedStatement deleteSt = connection.
+                prepareStatement("DELETE FROM client WHERE id = ?")) {
+
+
+            deleteSt.setLong(1, id);
+            deleteSt.executeUpdate();
+        }
     }
+
 
     public List<Client> listAll() {
         List<Client> result = new ArrayList<>();
-        try {
+        try (PreparedStatement getAllClientSt = connection.
+                prepareStatement("SELECT * FROM client")) {
             ResultSet resultSet = getAllClientSt.executeQuery();
             while (resultSet.next()) {
                 long id = resultSet.getInt("id");
