@@ -16,7 +16,7 @@ class ClientServiceTests {
     private ClientService service;
 
     @BeforeEach
-    public void beforeEach() throws SQLException {
+    void beforeEach() throws SQLException {
         final String connectionUrl = "jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1";
 
         new DatabaseMigrationsService().initDbService(connectionUrl);
@@ -27,61 +27,60 @@ class ClientServiceTests {
     }
 
     @AfterEach
-    public void afterEach() throws SQLException {
+    void afterEach() throws SQLException {
         connection.close();
 
     }
 
     @Test
-    public void testThanClientCreateCorectliAndGetById() throws SQLException {
+    void testThanClientCreateCorectliAndGetById() throws SQLException {
         long id = service.create("Ololo");
-
         Assertions.assertEquals("Ololo", service.getById(id));
     }
 
     @Test
-    public void testThanClientCreateSetNameNull() {
+    void testThanClientCreateSetNameNull() {
         Assertions.assertThrows(IllegalArgumentException.class, () -> {
             service.create(null);
         });
     }
 
     @Test
-    public void testThanClientCreateSetNameLess2Characters() {
+    void testThanClientCreateSetNameLess2Characters() {
         Assertions.assertThrows(IllegalArgumentException.class, () -> {
             service.create("O");
         });
     }
 
     @Test
-    public void testThanSetNewNameWithId() throws SQLException {
+    void testThanSetNewNameWithId() throws SQLException {
         service.setName(4, "Rolton");
 
         Assertions.assertEquals("Rolton", service.getById(4));
     }
 
     @Test
-    public void testThanSetNewNameWithIdNameNull() {
+    void testThanSetNewNameWithIdNameNull() {
         Assertions.assertThrows(IllegalArgumentException.class, () -> {
             service.setName(3, null);
         });
     }
 
     @Test
-    public void testThanSetNewNameWithIdSetNameLess2Characters() {
+    void testThanSetNewNameWithIdSetNameLess2Characters() {
         Assertions.assertThrows(IllegalArgumentException.class, () -> {
             service.setName(3, null);
         });
     }
 
     @Test
-    public void testThanDeleteClientByID() throws SQLException {
+    void testThanDeleteClientByID() throws SQLException {
         service.deleteById(3);
         Assertions.assertEquals(null, service.getById(3));
     }
 
     @Test
-    public void testThanGetListAllClient() {
+    void testThanGetListAllClient() {
         List<Client> clients = service.listAll();
         for (Client client : clients) {
             System.out.println("id: " + client.getId() + " , Name: " + client.getName());
